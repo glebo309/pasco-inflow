@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.pasco-dashboard-venv/
+.pytest_cache/
+*.log
+.DS_Store

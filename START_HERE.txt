@@ -1,0 +1,30 @@
+PASCO InFlow - how to start
+
+Everything is inside this folder, including its own Python.
+Nothing needs to be downloaded or installed on the Mac.
+
+1. Make sure the PASCO "Spectrometry" app is installed and the
+   spectrometer is plugged in via USB.
+
+2. Double-click "PASCO InFlow Dashboard.command" in this folder.
+
+   - The very first start sets itself up (about half a minute).
+     After that it starts in a few seconds.
+   - If macOS warns the file is from an unidentified developer:
+     right-click the .command file, choose Open, then Open again.
+
+3. Your browser opens the dashboard by itself. Keep the black
+   Terminal window open while measuring - closing it stops the
+   dashboard.
+
+4. In the PASCO Spectrometry app, press the red Record button.
+   The dashboard's top-right light turns green: "PASCO recording".
+   Then press "Start run" - it reads PASCO's live data while PASCO
+   keeps recording. When you are done, press "Stop run" in the
+   dashboard and stop PASCO's recording yourself. The dashboard
+   never clicks or switches windows and needs no permissions.
+
+5. Data is saved automatically to Desktop/PASCO_InFlow, one folder
+   per run, plain CSV files.
+
+Problems? Send the file launch.log (in this folder) to Glenn.

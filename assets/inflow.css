@@ -1,0 +1,849 @@
+#inflow-app {
+  --ink: #15151a;
+  --ink-soft: #3c3c43;
+  --muted: #6f6f76;
+  --line: rgba(18, 18, 24, 0.14);
+  --line-strong: rgba(18, 18, 24, 0.30);
+  --panel: #ffffff;
+  --canvas: #eceef1;
+  --soft: #e4e6ea;
+  --primary: #15151a;
+  --primary-hover: #2e2e35;
+  --green: #0a7f60;
+  --red: #b33a45;
+  --radius: 7px;
+  --mono: "SF Mono", ui-monospace, Menlo, monospace;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Header + spectral signature ── */
+
+#inflow-app .inflow-header {
+  flex: 0 0 58px;
+  padding: 0 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--ink);
+  color: #fff;
+  z-index: 10;
+}
+
+#inflow-app .inflow-header > div:first-child {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+}
+
+#inflow-app .inflow-brand {
+  font-size: 22px;
+  line-height: 1;
+  font-weight: 850;
+  letter-spacing: 0.005em;
+  white-space: nowrap;
+}
+
+/* The instrument's own range, 380–950 nm; the NIR half fades into the dark. */
+#inflow-app .inflow-spectral-strip {
+  flex: 0 0 4px;
+  background: linear-gradient(
+    90deg,
+    #6d00c4 0%,
+    #3d2ee0 10.5%,
+    #00b7d9 19.3%,
+    #1fce53 26.3%,
+    #f2d200 35.1%,
+    #ff7d00 42.1%,
+    #e5231b 52.6%,
+    #8c1210 70%,
+    #201216 100%
+  );
+}
+
+#inflow-app .inflow-header-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+#inflow-app .inflow-run-status,
+#inflow-app .inflow-device {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 5px;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+#inflow-app .inflow-run-status { font-weight: 800; }
+
+#inflow-app .inflow-run-status::before,
+#inflow-app .inflow-device::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #8e8e93;
+}
+
+#inflow-app .inflow-status-running::before { background: #3ad29f; box-shadow: 0 0 0 3px rgba(58, 210, 159, 0.15); }
+#inflow-app .inflow-status-complete::before { background: #69a7ff; }
+#inflow-app .inflow-status-stopped::before { background: #ffb84d; }
+#inflow-app .inflow-status-error::before { background: #ff6670; }
+
+#inflow-app .inflow-device {
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.72);
+}
+
+#inflow-app .inflow-device::before { width: 6px; height: 6px; }
+#inflow-app .inflow-device-ready { color: #c9f5e7; }
+#inflow-app .inflow-device-ready::before { background: #3ad29f; box-shadow: 0 0 0 2px rgba(58, 210, 159, 0.12); }
+#inflow-app .inflow-device-error { color: #ffd1d5; }
+#inflow-app .inflow-device-error::before { background: #ff6b75; }
+#inflow-app .inflow-device-attn { color: #ffe3b8; }
+#inflow-app .inflow-device-attn::before { background: #ffb84d; box-shadow: 0 0 0 2px rgba(255, 184, 77, 0.15); }
+
+/* ── Shell ── */
+
+#inflow-app .inflow-shell {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: 236px minmax(0, 1fr);
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ── Sidebar ── */
+
+#inflow-app .inflow-sidebar {
+  background: #f6f6f8;
+  border-right: 1px solid var(--line);
+  overflow: hidden auto;
+  display: flex;
+  flex-direction: column;
+}
+
+#inflow-app .inflow-side-section { flex: 0 0 auto; }
+
+#inflow-app .inflow-art {
+  margin: auto 0 15px;
+  align-self: center;
+  padding: 16px 8px 0;
+  color: var(--ink);
+  font: 12px/1.4 var(--mono);
+  white-space: pre;
+  overflow: hidden;
+  user-select: none;
+  opacity: 0.4;
+  transition: opacity 400ms;
+}
+
+#inflow-app .inflow-art-live { opacity: 1; }
+
+#inflow-app .inflow-side-section {
+  padding: 13px 14px 16px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+#inflow-app .inflow-side-title {
+  margin: -13px -14px 4px;
+  padding: 8px 14px 7px;
+  color: var(--muted);
+  border-bottom: 1px solid var(--line);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+#inflow-app .inflow-label {
+  color: var(--ink-soft);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-top: 5px;
+}
+
+#inflow-app .inflow-input-unit {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+
+#inflow-app .inflow-input-unit > span {
+  min-width: 52px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+#inflow-app .inflow-number {
+  width: 100%;
+  height: 32px;
+  padding: 0 9px;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  color: var(--ink);
+  background: #fff;
+  font: 650 13px/1 var(--mono);
+  font-variant-numeric: tabular-nums;
+  outline: none;
+  transition: border-color 120ms, box-shadow 120ms, opacity 120ms;
+}
+
+#inflow-app .inflow-number:focus,
+#inflow-app .inflow-wavelength-number:focus {
+  border-color: rgba(0, 0, 0, 0.55);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
+}
+
+#inflow-app .inflow-number:disabled {
+  color: transparent;
+  background: #efeff1;
+  opacity: 0.6;
+}
+
+/* ── Buttons ── */
+
+#inflow-app .inflow-button,
+#inflow-app .inflow-link-button {
+  appearance: none;
+  border: 1px solid;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 750;
+  transition: background 120ms, border-color 120ms, color 120ms, transform 80ms;
+}
+
+#inflow-app .inflow-button {
+  width: 100%;
+  min-height: 34px;
+  padding: 5px 10px;
+  font-size: 13px;
+}
+
+#inflow-app .inflow-button:active:not(:disabled),
+#inflow-app .inflow-link-button:active:not(:disabled) { transform: translateY(1px); }
+
+#inflow-app .inflow-run-buttons {
+  margin-top: 4px;
+  display: grid;
+  grid-template-columns: 1.7fr 1fr;
+  gap: 6px;
+}
+
+#inflow-app .inflow-button-primary {
+  color: #fff;
+  border-color: var(--primary);
+  background: var(--primary);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+}
+
+#inflow-app .inflow-button-primary:hover:not(:disabled) { background: var(--primary-hover); }
+
+#inflow-app .inflow-button-secondary {
+  color: var(--ink);
+  background: #fff;
+  border-color: var(--line-strong);
+}
+
+#inflow-app .inflow-button-secondary:hover:not(:disabled) { background: #f1f1f3; }
+
+#inflow-app .inflow-button-danger {
+  color: var(--red);
+  background: transparent;
+  border-color: rgba(179, 58, 69, 0.28);
+}
+
+#inflow-app .inflow-button-danger:hover:not(:disabled) { background: #fff2f3; }
+
+#inflow-app button:disabled {
+  cursor: not-allowed;
+  opacity: 0.36;
+}
+
+/* ── Save location ── */
+
+#inflow-app .inflow-save-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+#inflow-app .inflow-save-head .inflow-label { margin-top: 5px; }
+
+#inflow-app .inflow-text-button {
+  appearance: none;
+  border: 0;
+  padding: 0;
+  background: none;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 750;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+#inflow-app .inflow-text-button:hover:not(:disabled) { color: var(--primary-hover); }
+
+#inflow-app .inflow-save-location {
+  display: flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 5px 9px;
+  border-left: 3px solid var(--ink);
+  border-radius: 0 4px 4px 0;
+  background: var(--soft);
+  color: var(--ink-soft);
+  font: 650 11px/1.35 var(--mono);
+  overflow-wrap: anywhere;
+}
+
+#inflow-app .inflow-storage,
+#inflow-app .inflow-hint {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+#inflow-app .inflow-storage:empty { display: none; }
+
+#inflow-app .inflow-storage-warn { color: #9a6200; }
+
+#inflow-app .inflow-control-message {
+  min-height: 0;
+  color: #48484a;
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.35;
+  animation: inflow-message-fade 5s forwards;
+}
+
+@keyframes inflow-message-fade {
+  0%, 75% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ── Selects & checklists ── */
+
+#inflow-app .inflow-run-select .Select-control,
+#inflow-app .inflow-run-select .select__control,
+#inflow-app .inflow-setting-select .Select-control,
+#inflow-app .inflow-setting-select .select__control {
+  min-height: 31px;
+  border-color: var(--line-strong);
+  border-radius: 6px;
+  box-shadow: none;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+#inflow-app .inflow-setting-select .Select-control,
+#inflow-app .inflow-setting-select .select__control {
+  font: 650 13px/1 var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+
+#inflow-app .inflow-checklist label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #48484a;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.25;
+  cursor: pointer;
+}
+
+#inflow-app .inflow-checkbox {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--ink);
+  flex: 0 0 auto;
+}
+
+/* ── Main column ── */
+
+#inflow-app .inflow-main {
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  background: var(--canvas);
+  overflow: hidden;
+}
+
+/* ── Instrument strip: readouts + analysis controls in one panel ── */
+
+#inflow-app .inflow-instrument-strip {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 22px;
+  padding: 10px 18px 11px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 1px 2px rgba(15, 15, 25, 0.05);
+}
+
+#inflow-app .inflow-strip-divider {
+  flex: 0 0 1px;
+  background: var(--line);
+  margin: 1px 0;
+}
+
+#inflow-app .inflow-metric { min-width: 86px; }
+
+#inflow-app .inflow-metric-label {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+  white-space: nowrap;
+}
+
+#inflow-app .inflow-metric-value {
+  font: 800 20px/1.15 var(--mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+#inflow-app .inflow-wavelength-control { flex: 0 0 auto; }
+
+#inflow-app .inflow-wavelength-entry {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+#inflow-app .inflow-wavelength-swatch {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.22);
+  box-shadow: inset 0 0 3px rgba(255, 255, 255, 0.35);
+}
+
+#inflow-app .inflow-wavelength-number {
+  width: 96px;
+  height: 30px;
+  padding: 0 8px;
+  border: 2px solid var(--ink);
+  border-radius: 5px;
+  background: #fff;
+  color: var(--ink);
+  font: 800 16px/1 var(--mono);
+  font-variant-numeric: tabular-nums;
+  outline: none;
+}
+
+#inflow-app .inflow-wavelength-unit {
+  color: var(--ink-soft);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+#inflow-app .inflow-display-control {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+#inflow-app .inflow-display-control .inflow-motion-row { flex: 1 1 auto; }
+
+#inflow-app .inflow-smooth-toggle { margin: 0; }
+
+#inflow-app .inflow-motion-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+#inflow-app .inflow-info-badge {
+  width: 17px;
+  height: 17px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--ink-soft);
+  font-size: 10.5px;
+  font-weight: 850;
+  cursor: help;
+}
+
+/* ── Plot cards fill the remaining viewport ── */
+
+#inflow-app .inflow-grid {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+
+#inflow-app .inflow-card {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 7px 8px 4px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 1px 2px rgba(15, 15, 25, 0.05);
+}
+
+#inflow-app .inflow-card-header {
+  flex: 0 0 auto;
+  min-height: 27px;
+  padding: 0 3px 3px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+#inflow-app .inflow-card-header h2 {
+  font-size: 13px;
+  line-height: 1.3;
+  font-weight: 800;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#inflow-app .inflow-graph,
+#inflow-app .inflow-card .dash-graph {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+}
+
+#inflow-app .inflow-card .dash-graph .js-plotly-plot,
+#inflow-app .inflow-card .dash-graph .plot-container {
+  height: 100%;
+}
+
+#inflow-app .inflow-card-surface { display: none; }
+
+#inflow-app .inflow-grid-3d .inflow-card:not(.inflow-card-surface) { display: none; }
+
+#inflow-app .inflow-grid-3d .inflow-card-surface {
+  display: flex;
+  grid-column: 1 / -1;
+}
+
+#inflow-app .inflow-map-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: stretch;
+}
+
+#inflow-app .inflow-map-controls {
+  flex: 0 0 132px;
+  min-width: 132px;
+  padding: 18px 7px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  border-left: 1px solid var(--line);
+}
+
+#inflow-app .inflow-map-axis-title {
+  align-self: center;
+  margin-left: 0;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+#inflow-app .inflow-map-control-label {
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+#inflow-app .inflow-map-bound {
+  width: 88px;
+  padding: 5px 6px;
+  border-radius: 5px;
+  font: 800 10px/1.15 var(--mono);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  white-space: nowrap;
+}
+
+#inflow-app .inflow-map-bound-max {
+  color: #fff;
+  background: #111111;
+  border: 1px solid #111111;
+}
+
+#inflow-app .inflow-map-bound-min {
+  color: #111111;
+  background: #fff;
+  border: 1px solid #111111;
+}
+
+#inflow-app .inflow-map-range {
+  flex: 1 1 auto;
+  min-height: 260px;
+  width: 82px;
+  padding: 8px 0 12px;
+  display: grid;
+  grid-template-columns: 10px 22px 14px;
+  column-gap: 12px;
+  justify-content: center;
+  align-items: stretch;
+}
+
+#inflow-app .inflow-map-gradient {
+  width: 10px;
+  height: auto;
+  margin: 24px 0;
+  border: 1px solid rgba(17, 17, 17, 0.16);
+}
+
+#inflow-app #map-color-range {
+  flex: 0 0 22px;
+  height: 100% !important;
+}
+
+#inflow-app .inflow-map-ticks {
+  height: auto;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: 24px 0;
+  color: var(--ink-soft);
+  font: 700 11px/1 var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+
+#inflow-app .inflow-map-range .rc-slider-vertical .rc-slider-rail {
+  width: 4px !important;
+  background: #d4d4da !important;
+}
+
+#inflow-app .inflow-map-range .rc-slider-vertical .rc-slider-track {
+  width: 4px !important;
+  background: #111111 !important;
+}
+
+#inflow-app .inflow-map-range .rc-slider-vertical .rc-slider-handle {
+  width: 16px !important;
+  height: 16px !important;
+  margin-left: -6px !important;
+  border: 3px solid #111111 !important;
+  background: #fff !important;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.22);
+}
+
+#inflow-app .inflow-map-range .rc-slider-handle-1 {
+  background: #ffffff !important;
+}
+
+#inflow-app .inflow-map-range .rc-slider-handle-2 {
+  background: #111111 !important;
+}
+
+#inflow-app .inflow-map-range .rc-slider-vertical .rc-slider-dot {
+  width: 8px;
+  height: 8px;
+  margin-left: -2px;
+  border: 2px solid #94a3b8;
+  background: #fff;
+}
+
+#inflow-app .inflow-map-range .rc-slider-mark-text {
+  display: none;
+}
+
+#inflow-app .inflow-map-palette { width: 116px; }
+
+#inflow-app .inflow-map-palette .Select-control,
+#inflow-app .inflow-map-palette .select__control {
+  min-height: 30px;
+  height: 30px;
+  font-size: 11px;
+}
+
+#inflow-app .inflow-map-palette.is-focused:not(.is-open) > .Select-control,
+#inflow-app .inflow-map-palette .select__control--is-focused {
+  border-color: #111111 !important;
+  box-shadow: 0 0 0 1px #111111 !important;
+}
+
+#inflow-app .inflow-map-palette .Select-option.is-selected,
+#inflow-app .inflow-map-palette .select__option--is-selected {
+  color: #ffffff !important;
+  background: #111111 !important;
+}
+
+#inflow-app .inflow-map-palette .Select-option.is-focused,
+#inflow-app .inflow-map-palette .select__option--is-focused {
+  color: #111111 !important;
+  background: #ececef !important;
+}
+
+#inflow-app .inflow-view-toggle {
+  display: inline-flex;
+  margin-left: 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+#inflow-app .inflow-view-toggle label {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  color: var(--ink);
+  background: #fff;
+  font-size: 11.5px;
+  font-weight: 750;
+  cursor: pointer;
+  user-select: none;
+}
+
+#inflow-app .inflow-view-toggle label + label { border-left: 1px solid var(--line-strong); }
+
+#inflow-app .inflow-view-toggle input { display: none; }
+
+#inflow-app .inflow-view-toggle label:has(input:checked) {
+  background: var(--ink);
+  color: #fff;
+}
+
+#inflow-app .inflow-link-button {
+  padding: 4px 8px;
+  color: var(--ink);
+  background: #fff;
+  border-color: var(--line-strong);
+  font-size: 11.5px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+#inflow-app .inflow-link-button:hover:not(:disabled) { background: #f1f1f3; }
+
+#inflow-app .inflow-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+#inflow-app .inflow-export-message {
+  flex: 0 0 auto;
+  min-height: 0;
+  margin: 0 2px;
+  color: var(--green);
+  font-size: 11px;
+  font-weight: 750;
+  overflow-wrap: anywhere;
+}
+
+#inflow-app .inflow-export-message:empty { display: none; }
+
+/* ── Audit terminal ── */
+
+#inflow-app .inflow-details {
+  flex: 0 0 auto;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+#inflow-app .inflow-details summary {
+  padding: 6px 10px;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  user-select: none;
+  outline: none;
+}
+
+#inflow-app .inflow-details[open] summary { border-bottom: 1px solid var(--line); }
+#inflow-app .inflow-details-body { padding: 6px; }
+
+#inflow-app .inflow-terminal {
+  height: 118px;
+  margin: 0;
+  padding: 10px 13px;
+  overflow: hidden;
+  border-radius: 5px;
+  background: #101014;
+  color: #c7f6d8;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  font: 11.5px/1.5 var(--mono);
+  white-space: pre;
+  tab-size: 2;
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 1100px) {
+  #inflow-app { overflow: auto; height: auto; min-height: 100vh; }
+  #inflow-app .inflow-shell { overflow: visible; }
+  #inflow-app .inflow-main { overflow: visible; }
+  #inflow-app .inflow-grid { grid-template-columns: 1fr; }
+  #inflow-app .inflow-card { min-height: 300px; }
+  #inflow-app .inflow-instrument-strip { flex-wrap: wrap; row-gap: 10px; }
+}
+
+@media (max-width: 760px) {
+  #inflow-app .inflow-header { padding: 0 11px; }
+  #inflow-app .inflow-shell { grid-template-columns: 1fr; }
+  #inflow-app .inflow-sidebar { border-right: none; border-bottom: 1px solid var(--line); }
+  #inflow-app .inflow-strip-divider { display: none; }
+}
