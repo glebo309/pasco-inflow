@@ -8,6 +8,14 @@ PASCO Spectrometry can record absorbance over time at one wavelength or show a f
 
 *Dashboard shown with illustrative data.*
 
+## Features
+
+- Save a full calibrated spectrum every 1, 2, 5, 10, 30, or 60 seconds, for a set duration or until you stop the run.
+- Follow absorbance at any wavelength. Click the spectrum or enter a wavelength to recalculate the entire time trace from saved spectra.
+- Switch between the 2D spectrum and time trace and a 3D view showing time, wavelength, and absorbance as a color-coded isoabsorbance map. Adjust the map's color scale and range.
+- Turn on **Continuous motion** to smooth the display between measured frames. The spectrum, time trace, and map move continuously; saved and exported values stay as recorded.
+- Export the selected wavelength trace, latest full spectrum, or complete wavelength-by-time matrix as CSV.
+
 ## Download
 
 For an Apple Silicon Mac, download **PASCO_InFlow.zip** from the [latest release](https://github.com/glebo309/pasco-inflow/releases/latest). The package includes Python and its dependencies, so the first launch works offline. Unzip it and follow `START_HERE.txt` inside the folder.
