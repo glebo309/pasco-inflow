@@ -2,6 +2,8 @@
 
 Live absorbance monitoring for a PASCO PS-2600A spectrometer during flow experiments. The dashboard follows the calibrated spectra produced by PASCO Spectrometry, saves each full spectrum, and plots absorbance at a wavelength you can change during or after a run.
 
+PASCO Spectrometry can record absorbance over time at one wavelength or show a full spectrum without continuously saving it. PASCO InFlow works around that split by reading the software's live calibrated spectra during recording and saving each spectrum at a chosen interval. This gives you a full spectrum at every time point.
+
 ![PASCO InFlow dashboard with illustrative spectra](docs/dashboard.png)
 
 *Dashboard shown with illustrative data.*
